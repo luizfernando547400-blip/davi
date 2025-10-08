@@ -1,178 +1,167 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recicle+ - Coletor</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0fdf4;
-      color: #333;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Coletor - Ecoltarema</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+  html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; background: #f5f5f5; }
+  #map { height: 250px; width: 100%; margin-bottom: 10px; border-radius: 8px; }
 
-    .map-simulation {
-      background: linear-gradient(45deg, #2ecc71, #27ae60);
-      position: relative;
-      overflow: hidden;
-    }
+  .top-bar {
+    position: absolute; top: 0; left: 0; width: 100%; height: 55px;
+    background: #2e7d32; color: #fff; display: flex; justify-content: center; align-items: center;
+    font-size: 20px; font-weight: bold; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
 
-    .map-marker {
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+  .menu-btn { position: absolute; top: 12px; left: 12px; background: none; color: white; border: none; font-size: 24px; cursor: pointer; z-index: 1102; }
+  .notif-btn { position: absolute; top: 12px; right: 12px; background: none; color: white; border: none; font-size: 24px; cursor: pointer; z-index: 1102; }
 
-    .map-marker:hover {
-      transform: scale(1.2);
-    }
+  .coletas { padding: 10px; margin-bottom: 60px; }
+  .coleta-card {
+    background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .coleta-info { font-size: 14px; }
+  .coleta-info p { margin: 2px 0; }
+  .accept-btn { background: #4caf50; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+  .accept-btn:hover { background: #43a047; }
 
-    .status-badge {
-      font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 10px;
-      font-weight: bold;
-    }
+  .side-menu {
+    position: fixed; top: 0; left: -260px; width: 260px; height: 100%;
+    background: #2e7d32; color: white; padding-top: 60px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.5); transition: left 0.3s ease;
+    z-index: 1100; display: flex; flex-direction: column; align-items: center;
+  }
+  .side-menu.open { left: 0; }
+  .side-menu img.profile-pic { width: 90px; height: 90px; border-radius: 50%; margin-bottom: 10px; border: 3px solid white; object-fit: cover; }
+  .side-menu p { font-weight: bold; margin-bottom: 15px; font-size: 18px; }
+  .side-menu button { background: none; border: none; color: white; font-size: 18px; padding: 15px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #1b4d23; display: flex; align-items: center; width: 100%; }
+  .side-menu button:hover { background: #145623; }
+  .side-menu button span.icon { margin-right: 10px; font-size: 22px; }
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 375px;
-      background: white;
-      border-top: 1px solid #d1fae5;
-      display: flex;
-      justify-content: space-around;
-      padding: 8px 0;
-      z-index: 100;
-    }
-  </style>
+  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1050; display: none; }
+  .overlay.show { display: block; }
+</style>
 </head>
 
 <body>
-  <div class="max-w-md mx-auto bg-white min-h-screen shadow-md relative">
+<div class="top-bar">Coletor</div>
+<button class="menu-btn" id="btnMenu">☰</button>
+<button class="notif-btn" onclick="window.location.href='notificacao.html'">🔔</button>
 
-    <!-- Cabeçalho -->
-    <div class="bg-green-600 text-white p-6 rounded-b-3xl shadow-md">
-      <div class="flex items-center space-x-4">
-        <div class="w-16 h-16 bg-white text-green-600 rounded-full flex items-center justify-center text-2xl">🚛</div>
-        <div>
-          <h2 id="nomeUsuario" class="text-2xl font-bold">Olá!</h2>
-          <p class="text-green-100 text-sm">Coletor</p>
-        </div>
+<div id="map"></div>
+
+<div class="coletas" id="coletasContainer"></div>
+
+<nav class="side-menu" id="sideMenu">
+  <img id="fotoPerfil" src="perfil.jpg" alt="Foto de Perfil" class="profile-pic">
+  <p id="nomePerfil"></p>
+  <button onclick="window.location.href='perfil.html'"><span class="icon">👤</span>Perfil</button>
+  <button onclick="logout()"><span class="icon">🔑</span>Sair</button>
+</nav>
+<div class="overlay" id="overlay"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  // --- Controle de login ---
+  const emailLogado = localStorage.getItem("usuarioLogado") || sessionStorage.getItem("usuarioLogado");
+
+  if (!emailLogado) {
+    alert("Você precisa estar logado para acessar esta página.");
+    window.location.href = "login.html";
+  }
+
+  const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+  const user = usuarios.find(u => u.email === emailLogado);
+
+  if (!user || user.tipo !== "coletor") {
+    alert("Acesso restrito a coletores.");
+    window.location.href = "login.html";
+  }
+
+  // Preenche perfil
+  document.getElementById("nomePerfil").innerText = user.nome || user.email;
+  if (user.foto && user.foto.trim() !== "") {
+    document.getElementById("fotoPerfil").src = user.foto;
+  }
+
+  // Menu lateral
+  const btnMenu = document.getElementById("btnMenu");
+  const sideMenu = document.getElementById("sideMenu");
+  const overlay = document.getElementById("overlay");
+
+  btnMenu.addEventListener("click", () => {
+    sideMenu.classList.add("open");
+    overlay.classList.add("show");
+  });
+  overlay.addEventListener("click", () => {
+    sideMenu.classList.remove("open");
+    overlay.classList.remove("show");
+  });
+
+  function logout() {
+    localStorage.removeItem("usuarioLogado");
+    sessionStorage.removeItem("usuarioLogado");
+    alert("Você saiu da conta.");
+    window.location.href = "login.html";
+  }
+
+  // --- Mapa ---
+  const map = L.map('map', { zoomControl: false }).setView([-2.9245, -39.9167], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
+
+  const iconeLixeira = L.divIcon({ html: '<div style="font-size:28px;">♻</div>', className: '', iconSize: [28,28], iconAnchor:[14,28] });
+
+  // Pontos de coleta
+  const coletas = [
+    { id:1, nome:"Plásticos e Vidros", endereco:"Rua das Flores, 123", dist:"1.2 km", lat:-2.9286, lng:-39.9195, status:"Disponível" },
+    { id:2, nome:"Papéis e Papelão", endereco:"Av. Central, 789", dist:"2.5 km", lat:-2.9184, lng:-39.9180, status:"Disponível" },
+    { id:3, nome:"Metais", endereco:"Rua Verde, 456", dist:"3.0 km", lat:-2.9257, lng:-39.9097, status:"Disponível" }
+  ];
+
+  const container = document.getElementById("coletasContainer");
+
+  coletas.forEach(c => {
+    const card = document.createElement("div");
+    card.className = "coleta-card";
+    card.innerHTML = `
+      <div class="coleta-info">
+        <p><b>${c.nome}</b></p>
+        <p>📍 ${c.endereco}</p>
+        <p>Distância: ${c.dist}</p>
+        <p>Status: ${c.status}</p>
       </div>
-    </div>
+      <button class="accept-btn" onclick="aceitarColeta(${c.id})">Aceitar</button>
+    `;
+    container.appendChild(card);
 
-    <!-- Conteúdo principal -->
-    <div class="p-6 -mt-4 bg-white rounded-t-3xl relative z-10 pb-24">
+    // Marcadores no mapa
+    L.marker([c.lat, c.lng], { icon: iconeLixeira }).addTo(map).bindPopup(`<b>${c.nome}</b><br>${c.endereco}`);
+  });
 
-      <!-- Mini Mapa -->
-      <div class="map-simulation h-40 rounded-lg mb-6 relative">
-        <div class="absolute inset-0 flex items-center justify-center">
-          <div class="text-white text-center">
-            <div class="text-2xl mb-1">🗺</div>
-            <p class="text-sm">Pontos de coleta próximos</p>
-          </div>
+  function aceitarColeta(id) {
+    const coleta = coletas.find(c => c.id===id);
+    if (!coleta) return;
+    coleta.status = "Aceito";
+    alert(`Você aceitou coletar: ${coleta.nome}`);
+    container.innerHTML = ""; // Limpa e recria os cards
+    coletas.forEach(c => {
+      const card = document.createElement("div");
+      card.className = "coleta-card";
+      card.innerHTML = `
+        <div class="coleta-info">
+          <p><b>${c.nome}</b></p>
+          <p>📍 ${c.endereco}</p>
+          <p>Distância: ${c.dist}</p>
+          <p>Status: ${c.status}</p>
         </div>
-        <div class="map-marker bg-green-500 text-white" style="top: 25%; left: 35%;">📦</div>
-        <div class="map-marker bg-yellow-500 text-white" style="top: 60%; left: 70%;">📦</div>
-        <div class="map-marker bg-green-500 text-white" style="top: 80%; left: 20%;">📦</div>
-      </div>
-
-      <h4 class="text-lg font-bold text-gray-800 mb-4">Doações Disponíveis</h4>
-
-      <!-- Lista de doações -->
-      <div class="space-y-4">
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <h5 class="font-medium text-gray-800">Plásticos e Vidros</h5>
-              <p class="text-gray-600 text-sm">📍 Rua das Flores, 123</p>
-              <p class="text-gray-500 text-xs">Distância: 1.2 km</p>
-            </div>
-            <span class="status-badge bg-green-100 text-green-700">Disponível</span>
-          </div>
-          <button onclick="aceitarColeta('Plásticos e Vidros')"
-            class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition-all">
-            Aceitar Coleta
-          </button>
-        </div>
-
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <h5 class="font-medium text-gray-800">Papéis e Papelão</h5>
-              <p class="text-gray-600 text-sm">📍 Av. Central, 789</p>
-              <p class="text-gray-500 text-xs">Distância: 2.5 km</p>
-            </div>
-            <span class="status-badge bg-green-100 text-green-700">Disponível</span>
-          </div>
-          <button onclick="aceitarColeta('Papéis e Papelão')"
-            class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition-all">
-            Aceitar Coleta
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Navegação inferior -->
-    <div class="bottom-nav">
-      <button onclick="window.location.href='menu.html'" class="flex flex-col items-center text-gray-500">
-        <span class="text-xl">🏠</span>
-        <span class="text-xs">Início</span>
-      </button>
-      <button onclick="window.location.href='mapa.html'" class="flex flex-col items-center text-gray-500">
-        <span class="text-xl">📍</span>
-        <span class="text-xs">Mapa</span>
-      </button>
-      <button onclick="window.location.href='minhascoletas.html'" class="flex flex-col items-center text-gray-500">
-        <span class="text-xl">✅</span>
-        <span class="text-xs">Minhas Coletas</span>
-      </button>
-      <button onclick="window.location.href='perfil.html'" class="flex flex-col items-center text-gray-500">
-        <span class="text-xl">👤</span>
-        <span class="text-xs">Perfil</span>
-      </button>
-    </div>
-  </div>
-
-  <script>
-    // ======== Verificação de Login ========
-    const email = localStorage.getItem("usuarioLogado") || sessionStorage.getItem("usuarioLogado");
-
-    if (!email) {
-      alert("Você precisa estar logado para acessar esta página.");
-      window.location.href = "login.html";
-    } else {
-      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-      const usuario = usuarios.find(u => u.email === email);
-
-      if (!usuario) {
-        alert("Usuário não encontrado. Faça login novamente.");
-        window.location.href = "login.html";
-      } else {
-        document.getElementById("nomeUsuario").innerText = `Olá, ${usuario.nome}!`;
-      }
-    }
-
-    // ======== Função de aceitar coleta ========
-    function aceitarColeta(tipo) {
-      alert(`✅ Você aceitou a coleta de ${tipo}.`);
-      // Aqui você poderia salvar no localStorage para aparecer em "Minhas Coletas"
-    }
-  </script>
-
+        ${c.status==="Disponível"? `<button class="accept-btn" onclick="aceitarColeta(${c.id})">Aceitar</button>` : ""}
+      `;
+      container.appendChild(card);
+    });
+  }
+</script>
 </body>
-
 </html>
