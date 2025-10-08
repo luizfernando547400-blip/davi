@@ -80,6 +80,7 @@
     .form-group {
       text-align: left;
       margin-bottom: 15px;
+      position: relative;
     }
 
     .form-group label {
@@ -91,13 +92,16 @@
 
     .form-group input {
       width: 100%;
-      padding: 12px;
-      padding-left: 40px;
+      padding: 12px 12px 12px 40px;
       border: 1px solid #ccc;
       border-radius: 10px;
       font-size: 14px;
-      background: #fff url('https://img.icons8.com/ios-filled/50/user.png') no-repeat 10px center;
+      background: #fff no-repeat 10px center;
       background-size: 20px;
+    }
+
+    .form-group input[type="email"] {
+      background-image: url('https://img.icons8.com/ios-filled/50/user.png');
     }
 
     .form-group input[type="password"] {
@@ -153,11 +157,6 @@
       color: #148c3c;
     }
 
-    #re {
-      height: 50px;
-      width: 50px;
-    }
-
     .error-message {
       margin-top: 15px;
       color: red;
@@ -186,7 +185,7 @@
 
       <div class="form-group">
         <label>Senha</label>
-        <input type="password" id="senha" placeholder="" required />
+        <input type="password" id="senha" placeholder="Sua senha" required />
       </div>
 
       <div class="remember">
@@ -236,8 +235,14 @@
         sessionStorage.setItem("usuarioLogado", email);
       }
 
-      // Redireciona para menu.html
-      window.location.href = "menu.html";
+      // Redireciona para tela correta conforme tipo de usuário
+      if (usuario.tipo === "doador") {
+        window.location.href = "escolha.html";
+      } else if (usuario.tipo === "coletor") {
+        window.location.href = "coletor.html";
+      } else {
+        window.location.href = "menu.html"; // fallback
+      }
     });
   </script>
 </body>
