@@ -2,71 +2,276 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escolher Forma de Doação</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f1f8f1;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Doação na Lixeira - Ecoltarema</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-        h1 {
-            color: #2e7d32;
-            margin-bottom: 30px;
-            text-align: center;
-        }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1db954, #1aa34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-        .opcoes {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 80%;
-            max-width: 350px;
-        }
+    .container {
+      background: #f4fef5;
+      border-radius: 20px;
+      padding: 20px 30px 40px 30px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: fadeInUp 1s ease;
+    }
 
-        button {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 18px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
 
-        button:hover {
-            background-color: #388e3c;
-        }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-        .voltar {
-            background-color: #888;
-        }
+    h1 {
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 15px;
+      font-size: 26px;
+    }
 
-        .voltar:hover {
-            background-color: #666;
-        }
-    </style>
+    #usuarioInfo {
+      color: #444;
+      font-size: 16px;
+      margin-bottom: 20px;
+      word-wrap: break-word;
+    }
+
+    label {
+      font-weight: 600;
+      color: #333;
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    button {
+      background: #1db954;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 8px 0;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #17a44d;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 15px;
+    }
+
+    li {
+      background: #e6f4e9;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    li button {
+      margin-top: 5px;
+      background: #1db954;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      width: auto;
+    }
+
+    li button:hover {
+      background: #17a44d;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="container">
+    <h1>Doação na Lixeira</h1>
+    <p id="usuarioInfo">Carregando...</p>
 
-    <h1>Escolha a forma de doação</h1>
+    <label for="tipoReciclavel">Tipo de Reciclável</label>
+    <select id="tipoReciclavel">
+      <option value="">Selecione</option>
+      <option value="Plástico">Plástico</option>
+      <option value="Vidro">Vidro</option>
+      <option value="Papel">Papel</option>
+      <option value="Metal">Metal</option>
+      <option value="Eletrônico">Eletrônico</option>
+    </select>
 
-    <div class="opcoes">
-        <button onclick="window.location.href='fixa.html'">♻Doação na lixeira</button>
-        <button onclick="window.location.href='doador.html'">🏠 Doação em Casa</button>
-        <button class="voltar" onclick="window.location.href='menu.html'">⬅ Voltar</button>
-    </div>
+    <label for="tipoQuantidade">Doar por</label>
+    <select id="tipoQuantidade" onchange="atualizarPlaceholderQuantidade()">
+      <option value="quilo" selected>Quilo (kg)</option>
+      <option value="unidade">Unidade</option>
+    </select>
 
+    <label for="quantidade">Quantidade</label>
+    <input type="number" id="quantidade" min="0.01" step="0.01" placeholder="Digite a quantidade em kg">
+
+    <label for="lixeira">Local da Lixeira</label>
+    <select id="lixeira">
+      <option value="">Selecione o ponto de coleta</option>
+      <option value="Escola Municipal Itarema">Escola Municipal Itarema</option>
+      <option value="Praça Central">Praça Central</option>
+      <option value="Mercado Público">Mercado Público</option>
+      <option value="Secretaria de Meio Ambiente">Secretaria de Meio Ambiente</option>
+      <option value="Posto de Saúde">Posto de Saúde</option>
+    </select>
+
+    <button onclick="enviarDoacao()">Registrar Doação</button>
+    <button onclick="irPara('menu.html')">Voltar ao Menu</button>
+    <button onclick="irPara('ranking.html')">Ver Ranking</button>
+
+    <h3 style="margin-top:20px;">Minhas Doações</h3>
+    <ul id="minhasDoacoes">Carregando...</ul>
+  </div>
+
+  <script>
+    // --- Verificação de login e carregamento do usuário ---
+    const email = localStorage.getItem("usuarioLogado") || sessionStorage.getItem("usuarioLogado");
+
+    if (!email) {
+      alert("Você precisa estar logado para acessar esta página.");
+      window.location.href = "login.html";
+    }
+
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    const usuario = usuarios.find(u => u.email === email);
+
+    if (!usuario) {
+      alert("Usuário não encontrado. Faça login novamente.");
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("usuarioInfo").innerText = `Logado como: ${usuario.nome} | Tipo: ${usuario.tipo}`;
+    }
+
+    // --- Funções principais ---
+    function irPara(pagina) {
+      window.location.href = pagina;
+    }
+
+    function atualizarPlaceholderQuantidade() {
+      const tipoQuant = document.getElementById("tipoQuantidade").value;
+      const inputQtd = document.getElementById("quantidade");
+      if (tipoQuant === "quilo") {
+        inputQtd.placeholder = "Digite a quantidade em kg";
+        inputQtd.step = "0.01";
+        inputQtd.min = "0.01";
+      } else {
+        inputQtd.placeholder = "Digite a quantidade em unidades";
+        inputQtd.step = "1";
+        inputQtd.min = "1";
+      }
+    }
+
+    function enviarDoacao() {
+      let tipo = document.getElementById("tipoReciclavel").value;
+      let tipoQuantidade = document.getElementById("tipoQuantidade").value;
+      let quantidade = parseFloat(document.getElementById("quantidade").value);
+      let lixeira = document.getElementById("lixeira").value;
+
+      if (!tipo || !tipoQuantidade || !quantidade || !lixeira) {
+        alert("Preencha todos os campos.");
+        return;
+      }
+
+      if (tipoQuantidade === "quilo" && (isNaN(quantidade) || quantidade <= 0)) {
+        alert("Quantidade inválida (kg).");
+        return;
+      }
+
+      if (tipoQuantidade === "unidade" && (!Number.isInteger(quantidade) || quantidade < 1)) {
+        alert("Quantidade inválida (unidade).");
+        return;
+      }
+
+      let doacoes = JSON.parse(localStorage.getItem("doacoes")) || [];
+      doacoes.push({
+        tipo,
+        tipoQuantidade,
+        quantidade,
+        localizacao: lixeira,
+        doador: usuario.email,
+        status: "Entregue (Lixeira)"
+      });
+      localStorage.setItem("doacoes", JSON.stringify(doacoes));
+
+      alert("Doação registrada com sucesso! Obrigado por contribuir.");
+      carregarMinhasDoacoes();
+
+      document.getElementById("tipoReciclavel").value = "";
+      document.getElementById("tipoQuantidade").value = "quilo";
+      atualizarPlaceholderQuantidade();
+      document.getElementById("quantidade").value = "";
+      document.getElementById("lixeira").value = "";
+    }
+
+    function carregarMinhasDoacoes() {
+      let doacoes = JSON.parse(localStorage.getItem("doacoes")) || [];
+      let minhas = doacoes.filter(d => d.doador === usuario.email);
+      let lista = document.getElementById("minhasDoacoes");
+      lista.innerHTML = "";
+      if (minhas.length === 0) {
+        lista.innerHTML = "<li>Nenhuma doação registrada.</li>";
+        return;
+      }
+
+      minhas.forEach((d) => {
+        let li = document.createElement("li");
+        li.innerHTML = `
+          <b>${d.tipo}</b> - ${d.quantidade} ${d.tipoQuantidade === "quilo" ? "kg" : "unidades"}<br>
+          <b>Local:</b> ${d.localizacao}<br>
+          <b>Status:</b> ${d.status}
+        `;
+        lista.appendChild(li);
+      });
+    }
+
+    carregarMinhasDoacoes();
+  </script>
 </body>
 
 </html>

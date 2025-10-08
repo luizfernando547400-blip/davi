@@ -54,6 +54,19 @@
         .voltar:hover {
             background-color: #666;
         }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Exibir informações do usuário logado */
+        .usuario-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #2e7d32;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -62,10 +75,36 @@
     <h1>Escolha a forma de doação</h1>
 
     <div class="opcoes">
-        <button onclick="window.location.href='fixa.html'">♻Doação na lixeira</button>
+        <button onclick="window.location.href='fixa.html'">♻ Doação na lixeira</button>
         <button onclick="window.location.href='doador.html'">🏠 Doação em Casa</button>
         <button class="voltar" onclick="window.location.href='menu.html'">⬅ Voltar</button>
     </div>
+
+    <div id="usuarioInfo" class="usuario-info"></div>
+
+    <script>
+        window.onload = function () {
+            // Verifica login salvo no localStorage ou sessionStorage
+            const email = localStorage.getItem('usuarioLogado') || sessionStorage.getItem('usuarioLogado');
+
+            if (!email) {
+                alert('Você precisa estar logado para acessar esta página.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Busca o nome e tipo do usuário no localStorage
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const usuario = usuarios.find(u => u.email === email);
+
+            // Exibe info do usuário logado
+            if (usuario) {
+                document.getElementById('usuarioInfo').textContent = `Logado como: ${usuario.nome} (${usuario.tipo})`;
+            } else {
+                document.getElementById('usuarioInfo').textContent = `Logado como: ${email}`;
+            }
+        };
+    </script>
 
 </body>
 

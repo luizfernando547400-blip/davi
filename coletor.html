@@ -1,117 +1,500 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
-  <title>Coletor - Ecoltarema</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recicle+ - Conectando doadores e coletores</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: url("fundo-ecoltarema.jpg") no-repeat center center fixed;
-      background-size: cover;
-      margin: 0;
-      padding: 20px;
+      box-sizing: border-box;
     }
 
-    .container {
-      background: rgba(255,255,255,0.95);
-      border-radius: 12px;
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
+    .app-container {
+      max-width: 375px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
     }
 
-    h2 {
-      color: #2e7d32;
+    .screen {
+      display: none;
+      min-height: 100vh;
+      position: relative;
     }
 
-    .doacoes {
-      margin-top: 30px;
+    .screen.active {
+      display: block;
     }
 
-    .doacao {
-      background: #e8f5e9;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
+    .gradient-bg {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 50%, #ffffff 100%);
     }
 
-    button {
-      background-color: #2e7d32;
-      color: white;
-      padding: 10px;
-      width: 100%;
-      margin-top: 5px;
-      border: none;
-      border-radius: 8px;
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 375px;
+      background: white;
+      border-top: 1px solid #ecf0f1;
+      z-index: 100;
+    }
+
+    .map-simulation {
+      background: linear-gradient(45deg, #3498db 0%, #2980b9 50%, #1abc9c 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-marker {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    .menu {
-      text-align: center;
-      margin-bottom: 15px;
+    .map-marker:hover {
+      transform: scale(1.2);
     }
 
-    .menu a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: #2e7d32;
+    .status-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
       font-weight: bold;
     }
   </style>
 </head>
-<body>
 
-  <div class="menu">
-    <a href="mapa.html">🗺️ Mapa</a> |
-    <a href="index.html" onclick="sair()">🚪 Sair</a>
-  </div>
+<body class="bg-gray-100">
+  <div class="app-container">
 
-  <div class="container">
-    <h2>Doações Disponíveis</h2>
-    <div id="listaDoacoes"></div>
-  </div>
+    <!-- 1. Tela Inicial (Splash Screen) -->
+    <div id="splash" class="screen active gradient-bg flex flex-col items-center justify-center text-center p-8">
+      <div class="fade-in">
+        <div class="text-8xl mb-6 pulse">🌱♻</div>
+        <h1 class="text-4xl font-bold text-white mb-4">Recicle+</h1>
+        <p class="text-white text-lg mb-12 leading-relaxed">
+          Conectando doadores e coletores por um futuro sustentável
+        </p>
+        <button onclick="showScreen('login')"
+          class="bg-white text-green-600 font-bold py-4 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all">
+          Começar
+        </button>
+      </div>
+    </div>
 
-  <script>
-    if (!localStorage.getItem("usuario")) {
-      alert("Você precisa estar logado.");
-      window.location.href = "index.html";
-    }
+    <!-- 2. Tela de Login -->
+    <div id="login" class="screen">
+      <div class="gradient-bg h-48 flex items-center justify-center">
+        <div class="text-center text-white">
+          <div class="text-6xl mb-4">🌱♻</div>
+          <h2 class="text-2xl font-bold">Recicle+</h2>
+        </div>
+      </div>
 
-    function sair() {
-      localStorage.removeItem("usuario");
-    }
+      <div class="p-8 -mt-8 bg-white rounded-t-3xl relative z-10">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Entrar na sua conta</h3>
 
-    // Simulação de doações disponíveis
-    let doacoesDisponiveis = [
-      { material: "Plástico", quantidade: "2 sacos", endereco: "Rua A, Centro" },
-      { material: "Papelão", quantidade: "1 caixa", endereco: "Rua B, Bairro Verde" }
-    ];
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">E-mail</label>
+            <input type="email" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
 
-    function mostrarDoacoes() {
-      const lista = document.getElementById("listaDoacoes");
-      lista.innerHTML = "";
-      doacoesDisponiveis.forEach((d, i) => {
-        const div = document.createElement("div");
-        div.className = "doacao";
-        div.innerHTML = `
-          <strong>${d.material}</strong><br>
-          Quantidade: ${d.quantidade}<br>
-          Endereço: ${d.endereco}<br>
-          <button onclick="aceitar(${i})">Aceitar Coleta</button>
-        `;
-        lista.appendChild(div);
-      });
-    }
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Senha</label>
+            <input type="password" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
 
-    function aceitar(index) {
-      const d = doacoesDisponiveis[index];
-      alert("Você aceitou coletar: " + d.material + " em " + d.endereco);
-      doacoesDisponiveis.splice(index, 1);
-      mostrarDoacoes();
-    }
+          <button type="submit"
+            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-all">
+            Entrar
+          </button>
+        </form>
 
-    mostrarDoacoes();
-  </script>
+        <div class="text-center mt-6">
+          <button onclick="showScreen('register')"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-lg transition-all">
+            Criar conta
+          </button>
+        </div>
 
-</body>
-</html>
+        <div class="text-center mt-4">
+          <a href="#" class="text-green-600 text-sm">Esqueceu a senha?</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Tela de Cadastro -->
+    <div id="register" class="screen">
+      <div class="gradient-bg h-32 flex items-center justify-center">
+        <div class="text-center text-white">
+          <div class="text-4xl mb-2">🤝</div>
+          <h2 class="text-xl font-bold">Criar Conta</h2>
+        </div>
+      </div>
+
+      <div class="p-8 -mt-4 bg-white rounded-t-3xl relative z-10">
+        <form onsubmit="handleRegister(event)" class="space-y-4">
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Nome</label>
+            <input type="text" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">E-mail</label>
+            <input type="email" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Senha</label>
+            <input type="password" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-medium mb-3">Escolher perfil</label>
+            <div class="space-y-3">
+              <label
+                class="flex items-center space-x-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="userType" value="doador" required class="text-green-600">
+                <span class="text-2xl">📦</span>
+                <span class="font-medium">Doador - Quero doar recicláveis</span>
+              </label>
+              <label
+                class="flex items-center space-x-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="userType" value="coletor" required class="text-green-600">
+                <span class="text-2xl">🚛</span>
+                <span class="font-medium">Coletor - Quero coletar recicláveis</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit"
+            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-all">
+            Cadastrar
+          </button>
+        </form>
+
+        <div class="text-center mt-4">
+          <button onclick="showScreen('login')" class="text-green-600 text-sm">Já tem conta? Entrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Tela do Doador -->
+    <div id="doador-home" class="screen">
+      <div class="gradient-bg p-6 pb-8">
+        <div class="flex items-center space-x-4 mb-6">
+          <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-2xl">👤</div>
+          <div class="text-white">
+            <h3 class="text-xl font-bold">Olá, Maria!</h3>
+            <p class="text-green-100">Doadora</p>
+          </div>
+        </div>
+
+        <button onclick="showScreen('nova-doacao')"
+          class="w-full bg-white text-green-600 font-bold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all">
+          ➕ Cadastrar Nova Doação
+        </button>
+      </div>
+
+      <div class="p-6 -mt-4 bg-white rounded-t-3xl relative z-10 pb-24">
+        <h4 class="text-lg font-bold text-gray-800 mb-4">Suas Doações</h4>
+
+        <div class="space-y-4">
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-yellow-500">
+            <div class="flex justify-between items-start mb-2">
+              <h5 class="font-medium text-gray-800">Plásticos e Vidros</h5>
+              <span class="status-badge bg-yellow-100 text-yellow-700">Pendente</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-2">📍 Rua das Flores, 123</p>
+            <p class="text-gray-500 text-xs">Cadastrado há 2 horas</p>
+          </div>
+
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-blue-500">
+            <div class="flex justify-between items-start mb-2">
+              <h5 class="font-medium text-gray-800">Papéis e Papelão</h5>
+              <span class="status-badge bg-blue-100 text-blue-700">Coletado</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-2">📍 Av. Principal, 456</p>
+            <p class="text-gray-500 text-xs">Coletado por João - Ontem</p>
+          </div>
+
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-green-500">
+            <div class="flex justify-between items-start mb-2">
+              <h5 class="font-medium text-gray-800">Metais</h5>
+              <span class="status-badge bg-green-100 text-green-700">Concluído</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-2">📍 Rua Verde, 789</p>
+            <p class="text-gray-500 text-xs">Concluído - Há 3 dias</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Navigation for Doador -->
+      <div class="bottom-nav flex justify-around py-3">
+        <button onclick="showScreen('doador-home')" class="flex flex-col items-center text-green-600">
+          <span class="text-xl">🏠</span>
+          <span class="text-xs">Início</span>
+        </button>
+        <button onclick="showScreen('nova-doacao')" class="flex flex-col items-center text-gray-500">
+          <span class="text-xl">➕</span>
+          <span class="text-xs">Nova doação</span>
+        </button>
+        <button onclick="showScreen('mapa')" class="flex flex-col items-center text-gray-500">
+          <span class="text-xl">📍</span>
+          <span class="text-xs">Mapa</span>
+        </button>
+        <button onclick="showScreen('perfil')" class="flex flex-col items-center text-gray-500">
+          <span class="text-xl">👤</span>
+          <span class="text-xs">Perfil</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. Tela do Coletor -->
+    <div id="coletor-home" class="screen">
+      <div class="gradient-bg p-6 pb-8">
+        <div class="flex items-center space-x-4 mb-6">
+          <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-2xl">👤</div>
+          <div class="text-white">
+            <h3 class="text-xl font-bold">Olá, João!</h3>
+            <p class="text-green-100">Coletor</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 -mt-4 bg-white rounded-t-3xl relative z-10 pb-24">
+        <!-- Mini Mapa -->
+        <div class="map-simulation h-32 rounded-lg mb-6 relative">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-white text-center">
+              <div class="text-2xl mb-1">🗺</div>
+              <p class="text-sm">Mapa com pontos de coleta</p>
+            </div>
+          </div>
+          <div class="map-marker bg-green-500 text-white" style="top: 20%; left: 30%;">📦</div>
+          <div class="map-marker bg-yellow-500 text-white" style="top: 60%; left: 70%;">📦</div>
+          <div class="map-marker bg-green-500 text-white" style="top: 80%; left: 20%;">📦</div>
+        </div>
+
+        <h4 class="text-lg font-bold text-gray-800 mb-4">Doações Disponíveis</h4>
+
+        <div class="space-y-4">
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h5 class="font-medium text-gray-800">Plásticos e Vidros</h5>
+                <p class="text-gray-600 text-sm">📍 Rua das Flores, 123</p>
+                <p class="text-gray-500 text-xs">Distância: 1.2 km</p>
+              </div>
+              <span class="status-badge bg-green-100 text-green-700">Disponível</span>
+            </div>
+            <button onclick="acceptCollection()"
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition-all">
+              Aceitar Coleta
+            </button>
+          </div>
+
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h5 class="font-medium text-gray-800">Papéis e Papelão</h5>
+                <p class="text-gray-600 text-sm">📍 Av. Central, 789</p>
+                <p class="text-gray-500 text-xs">Distância: 2.5 km</p>
+              </div>
+              <span class="status-badge bg-green-100 text-green-700">Disponível</span>
+            </div>
+            <button onclick="acceptCollection()"
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition-all">
+              Aceitar Coleta
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Navigation for Coletor -->
+      <div class="bottom-nav flex justify-around py-3">
+        <button onclick="showScreen('coletor-home')" class="flex flex-col items-center text-green-600">
+          <span class="text-xl">🏠</span>
+          <span class="text-xs">Início</span>
+        </button>
+        <button onclick="showScreen('mapa')" class="flex flex-col items-center text-gray-500">
+          <span class="text-xl">📍</span>
+          <span class="text-xs">Mapa</span>
+        </button>
+        <button onclick="showScreen('minhas-coletas')" class="flex flex-col items-center text-gray-500">
+          <span class="text-xl">✅</span>
+          <span class="text-xs">Minhas coletas</span>
+        </button>
+        <button onclick="showScreen('perfil')" class="flex flex-col items-center text-gray-500">
+          <span class="text-xl">👤</span>
+          <span class="text-xs">Perfil</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 6. Tela de Nova Doação -->
+    <div id="nova-doacao" class="screen">
+      <div class="gradient-bg p-6 pb-8">
+        <div class="flex items-center space-x-4">
+          <button onclick="showScreen('doador-home')" class="text-white text-2xl">←</button>
+          <h2 class="text-xl font-bold text-white">Nova Doação</h2>
+        </div>
+      </div>
+
+      <div class="p-6 -mt-4 bg-white rounded-t-3xl relative z-10">
+        <form onsubmit="handleNewDonation(event)" class="space-y-6">
+          <div>
+            <label class="block text-gray-700 font-medium mb-3">Tipo de Material</label>
+            <div class="grid grid-cols-2 gap-3">
+              <label
+                class="flex flex-col items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" name="materials" value="plastico" class="mb-2">
+                <span class="text-3xl mb-1">🥤</span>
+                <span class="text-sm font-medium">Plástico</span>
+              </label>
+              <label
+                class="flex flex-col items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" name="materials" value="vidro" class="mb-2">
+                <span class="text-3xl mb-1">🍾</span>
+                <span class="text-sm font-medium">Vidro</span>
+              </label>
+              <label
+                class="flex flex-col items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" name="materials" value="papel" class="mb-2">
+                <span class="text-3xl mb-1">📄</span>
+                <span class="text-sm font-medium">Papel</span>
+              </label>
+              <label
+                class="flex flex-col items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" name="materials" value="metal" class="mb-2">
+                <span class="text-3xl mb-1">🥫</span>
+                <span class="text-sm font-medium">Metal</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Quantidade Aproximada</label>
+            <select required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <option value="">Selecione a quantidade</option>
+              <option value="pequena">Pequena (1-2 sacolas)</option>
+              <option value="media">Média (3-5 sacolas)</option>
+              <option value="grande">Grande (mais de 5 sacolas)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Localização</label>
+            <input type="text" required placeholder="Digite seu endereço"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Observações (opcional)</label>
+            <textarea rows="3" placeholder="Informações adicionais sobre a doação"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"></textarea>
+          </div>
+
+          <button type="submit"
+            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-all">
+            Salvar Doação
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 7. Tela de Mapa -->
+    <div id="mapa" class="screen">
+      <div class="gradient-bg p-6 pb-4">
+        <h2 class="text-xl font-bold text-white text-center">Mapa de Doações</h2>
+      </div>
+
+      <div class="p-4 -mt-2 bg-white rounded-t-3xl relative z-10 pb-24">
+        <!-- Legenda -->
+        <div class="flex justify-center space-x-4 mb-4 text-xs">
+          <div class="flex items-center space-x-1">
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span>Disponível</span>
+          </div>
+          <div class="flex items-center space-x-1">
+            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <span>Aguardando</span>
+          </div>
+          <div class="flex items-center space-x-1">
+            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <span>Concluído</span>
+          </div>
+        </div>
+
+        <!-- Mapa Principal -->
+        <div class="map-simulation h-96 rounded-lg relative">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-white text-center">
+              <div class="text-4xl mb-2">🗺</div>
+              <p class="text-lg">Mapa Interativo</p>
+              <p class="text-sm opacity-75">Toque nos pontos para ver detalhes</p>
+            </div>
+          </div>
+
+          <!-- Marcadores no mapa -->
+          <div class="map-marker bg-green-500 text-white" style="top: 15%; left: 25%;"
+            onclick="showMapDetails('Doação de Plásticos', 'Rua A, 123', 'Disponível')">📦</div>
+          <div class="map-marker bg-yellow-500 text-white" style="top: 35%; left: 70%;"
+            onclick="showMapDetails('Doação de Papéis', 'Av. B, 456', 'Aguardando coleta')">📄</div>
+          <div class="map-marker bg-green-500 text-white" style="top: 60%; left: 20%;"
+            onclick="showMapDetails('Doação de Vidros', 'Rua C, 789', 'Disponível')">🍾</div>
+          <div class="map-marker bg-blue-500 text-white" style="top: 75%; left: 80%;"
+            o
