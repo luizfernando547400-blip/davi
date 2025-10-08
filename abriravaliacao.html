@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação - Ecoltarema</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .top-bar {
+            height: 60px;
+            background: #2e7d32;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 14px;
+            font-size: 24px;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: #222;
+            margin: 20px 0;
+            font-size: 26px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .stars {
+            display: flex;
+            gap: 10px;
+            font-size: 50px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .stars span {
+            color: #ccc;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .stars span.selected,
+        .stars span:hover,
+        .stars span:hover~span {
+            color: #f5b301;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 480px;
+            height: 140px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            resize: none;
+            margin-bottom: 20px;
+            background-color: #fff;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #1db954;
+            outline: none;
+        }
+
+        button.submit-btn {
+            background: #1db954;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.submit-btn:hover {
+            background: #17a44d;
+        }
+
+        button.submit-btn:active {
+            background: #128a35;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        footer a {
+            color: #2e7d32;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        Avaliação
+        <button class="back-btn" onclick="window.history.back()">←</button>
+    </div>
+
+    <div class="container">
+        <h1>Avalie nosso aplicativo</h1>
+        <p>Queremos saber sua opinião! Avalie nosso app de 1 a 5 estrelas e deixe um comentário sobre sua experiência.
+        </p>
+
+        <div class="stars" id="stars">
+            <span data-value="1">★</span>
+            <span data-value="2">★</span>
+            <span data-value="3">★</span>
+            <span data-value="4">★</span>
+            <span data-value="5">★</span>
+        </div>
+
+        <textarea id="comentario" placeholder="Deixe seu comentário aqui..."></textarea>
+
+        <button class="submit-btn" onclick="enviarAvaliacao()">Enviar Avaliação</button>
+    </div>
+
+    <footer>
+        <p>Se você ainda não é usuário, <a href="#">clique aqui</a> para fazer o login.</p>
+    </footer>
+
+    <script>
+        let notaSelecionada = 0;
+        const estrelas = document.querySelectorAll("#stars span");
+
+        estrelas.forEach(star => {
+            star.addEventListener('click', () => {
+                notaSelecionada = star.dataset.value;
+                atualizarEstrelas();
+            });
+            star.addEventListener('mouseover', () => {
+                const valor = star.dataset.value;
+                estrelas.forEach(s => s.classList.toggle('selected', s.dataset.value <= valor));
+            });
+            star.addEventListener('mouseout', () => {
+                atualizarEstrelas();
+            });
+        });
+
+        function atualizarEstrelas() {
+            estrelas.forEach(star => {
+                star.classList.toggle('selected', star.dataset.value <= notaSelecionada);
+            });
+        }
+
+        function enviarAvaliacao() {
+            if (notaSelecionada == 0) {
+                alert("Por favor, selecione uma nota antes de enviar sua avaliação.");
+                return;
+            }
+
+            const comentario = document.getElementById("comentario").value.trim();
+            const emailLogado = localStorage.getItem("usuarioLogado");
+            if (!emailLogado) {
+                alert("Por favor, faça login antes de enviar sua avaliação.");
+                return;
+            }
+
+            const avaliacoes = JSON.parse(localStorage.getItem("avaliacoes") || "[]");
+            avaliacoes.push({ usuario: emailLogado, nota: notaSelecionada, comentario });
+            localStorage.setItem("avaliacoes", JSON.stringify(avaliacoes));
+
+            alert("Sua avaliação foi enviada com sucesso! Obrigado pelo seu feedback.");
+            window.history.back();
+        }
+    </script>
+
+</body>
+
+</html>

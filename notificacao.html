@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notificações - Ecoltarema</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #2e7d32;
+      color: white;
+      padding: 15px 20px;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .notificacao {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-voltar {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 15px 0;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 0 0 8px 8px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-voltar:hover {
+      background-color: #27662a;
+    }
+
+    /* Scrollbar fina */
+    main::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    main::-webkit-scrollbar-thumb {
+      background-color: #2e7d32;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #27662a;
+    }
+  </style>
+</head>
+
+<body>
+  <header>Notificações</header>
+
+  <main id="listaNotificacoes">
+    <!-- Notificações aparecerão aqui -->
+  </main>
+
+  <button class="btn-voltar" onclick="voltarMenu()">Voltar ao Menu</button>
+
+  <script>
+    // Função para buscar notificações do servidor
+    async function buscarNotificacoes() {
+      try {
+        const response = await fetch('/notificacoes', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem("user_token")}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          mostrarNotificacoes(data.notificacoes || []);
+        } else {
+          alert(data.message || 'Erro ao carregar notificações');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Erro de conexão com o servidor.');
+      }
+    }
+
+    // Função para adicionar notificações à interface
+    function mostrarNotificacoes(notificacoes) {
+      const lista = document.getElementById('listaNotificacoes');
+      lista.innerHTML = '';
+
+      if (notificacoes.length === 0) {
+        lista.innerHTML = '<p>Nenhuma notificação encontrada.</p>';
+        return;
+      }
+
+      notificacoes.forEach(notificacao => {
+        const div = document.createElement('div');
+        div.className = 'notificacao';
+        div.innerHTML = `<span>${notificacao.mensagem}</span>`;
+
+        const btnVisualizar = document.createElement('button');
+        btnVisualizar.textContent = 'Visualizar';
+        btnVisualizar.onclick = () => visualizarNotificacao(notificacao.id);
+
+        const btnExcluir = document.createElement('button');
+        btnExcluir.textContent = 'Excluir';
+        btnExcluir.onclick = () => excluirNotificacao(notificacao.id);
+
+        div.appendChild(btnVisualizar);
+        div.appendChild(btnExcluir);
+        lista.appendChild(div);
+      });
+    }
+
+    // Função para marcar a notificação como visualizada
+    async function visualizarNotificacao(id) {
+      try {
+        const response = await fetch(`/notificacoes/visualizar/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem("user_token")}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Notificação visualizada.');
+          buscarNotificacoes(); // Atualiza a lista
+        } else {
+          alert(data.message || 'Erro ao visualizar notificação.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Erro de conexão com o servidor.');
+      }
+    }
+
+    // Função para excluir a notificação
+    async function excluirNotificacao(id) {
+      try {
+        const response = await fetch(`/notificacoes/deletar/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem("user_token")}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Notificação excluída.');
+          buscarNotificacoes();
+        } else {
+          alert(data.message || 'Erro ao excluir notificação.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Erro de conexão com o servidor.');
+      }
+    }
+
+    // Função chamada ao carregar a página
+    window.onload = buscarNotificacoes;
+
+    // Função para voltar ao menu
+    function voltarMenu() {
+      window.location.href = 'menu.html';
+    }
+  </script>
+</body>
+</html>
