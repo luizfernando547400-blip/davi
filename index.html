@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ecoltarema - Login</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Poppins", Arial, sans-serif;
+    background-color: #26a845;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .login-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 40px 35px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    width: 330px;
+    text-align: center;
+  }
+
+  .login-card img.logo-itarema {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+  }
+
+  .login-card img.logo-recicle {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 5px;
+  }
+
+  .login-card h2 {
+    font-size: 22px;
+    color: #2e7d32;
+    margin: 8px 0 5px 0;
+  }
+
+  .login-card .subtitle {
+    color: #43a047;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .login-card p {
+    color: #555;
+    font-size: 13px;
+    margin-bottom: 25px;
+  }
+
+  .input-group {
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 12px 40px 12px 40px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+  }
+
+  .input-group input:focus {
+    border-color: #43a047;
+  }
+
+  .input-group i {
+    position: absolute;
+    top: 13px;
+    left: 14px;
+    color: #666;
+    font-size: 17px;
+  }
+
+  .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .options label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #333;
+  }
+
+  .options a {
+    text-decoration: none;
+    color: #2e7d32;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #256d29;
+  }
+
+  .signup {
+    margin-top: 25px;
+    font-size: 13px;
+  }
+
+  .signup a {
+    color: #2e7d32;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .error {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  @media (max-width: 400px) {
+    .login-card {
+      width: 90%;
+      padding: 30px 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="login-card">
+    <img src="logo-itarema.png" alt="Logo Itarema" class="logo-itarema">
+    <img src="recicle.png" alt="Logo Recicle" class="logo-recicle">
+    <h2>RECICLE+</h2>
+    <div class="subtitle">Reciclagem Sustentável!</div>
+    <p>Faça login para continuar ajudando o meio ambiente</p>
+
+    <form id="loginForm">
+      <div class="input-group">
+        <i>📧</i>
+        <input type="email" id="email" required placeholder="seu@email.com">
+      </div>
+
+      <div class="input-group">
+        <i>🔒</i>
+        <input type="password" id="senha" required placeholder="Digite sua senha">
+      </div>
+
+      <div class="options">
+        <label><input type="checkbox" id="lembrar"> Lembrar de mim</label>
+        <a href="#">Esqueceu a senha?</a>
+      </div>
+
+      <button type="submit">Entrar no App</button>
+    </form>
+
+    <div class="signup">
+      Não tem Ecoltarema? <a href="cadastro.html">Cadastre-se gratuitamente</a>
+    </div>
+
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value;
+
+      const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+      const usuario = usuarios.find(u => u.email === email);
+
+      if (!usuario) {
+        errorMsg.textContent = 'Usuário não encontrado.';
+        return;
+      }
+
+      if (usuario.senha !== senha) {
+        errorMsg.textContent = 'Senha incorreta.';
+        return;
+      }
+
+      localStorage.setItem('usuarioLogado', usuario.email);
+      window.location.href = 'menu.html';
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coletor - Ecoltarema</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url("fundo-ecoltarema.jpg") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #2e7d32;
+    }
+
+    .doacoes {
+      margin-top: 30px;
+    }
+
+    .doacao {
+      background: #e8f5e9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .menu {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .menu a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="menu">
+    <a href="mapa.html">🗺️ Mapa</a> |
+    <a href="index.html" onclick="sair()">🚪 Sair</a>
+  </div>
+
+  <div class="container">
+    <h2>Doações Disponíveis</h2>
+    <div id="listaDoacoes"></div>
+  </div>
+
+  <script>
+    if (!localStorage.getItem("usuario")) {
+      alert("Você precisa estar logado.");
+      window.location.href = "index.html";
+    }
+
+    function sair() {
+      localStorage.removeItem("usuario");
+    }
+
+    // Simulação de doações disponíveis
+    let doacoesDisponiveis = [
+      { material: "Plástico", quantidade: "2 sacos", endereco: "Rua A, Centro" },
+      { material: "Papelão", quantidade: "1 caixa", endereco: "Rua B, Bairro Verde" }
+    ];
+
+    function mostrarDoacoes() {
+      const lista = document.getElementById("listaDoacoes");
+      lista.innerHTML = "";
+      doacoesDisponiveis.forEach((d, i) => {
+        const div = document.createElement("div");
+        div.className = "doacao";
+        div.innerHTML = `
+          <strong>${d.material}</strong><br>
+          Quantidade: ${d.quantidade}<br>
+          Endereço: ${d.endereco}<br>
+          <button onclick="aceitar(${i})">Aceitar Coleta</button>
+        `;
+        lista.appendChild(div);
+      });
+    }
+
+    function aceitar(index) {
+      const d = doacoesDisponiveis[index];
+      alert("Você aceitou coletar: " + d.material + " em " + d.endereco);
+      doacoesDisponiveis.splice(index, 1);
+      mostrarDoacoes();
+    }
+
+    mostrarDoacoes();
+  </script>
+
+</body>
+</html>

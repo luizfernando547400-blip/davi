@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cadastro - Ecoltarema</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .cadastro-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 320px;
+  }
+  h2 {
+    text-align: center;
+    color: #2e7d32;
+    margin-bottom: 24px;
+  }
+  label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+  }
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  button {
+    margin-top: 20px;
+    width: 100%;
+    background: #4caf50;
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background: #43a047;
+  }
+  .link {
+    margin-top: 16px;
+    text-align: center;
+  }
+  .link a {
+    color: #2e7d32;
+    text-decoration: none;
+  }
+  .error {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+  }
+  .success {
+    color: green;
+    margin-top: 10px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="cadastro-container">
+  <h2>Cadastro</h2>
+  <form id="cadastroForm">
+    <label for="nome">Nome completo</label>
+    <input type="text" id="nome" required placeholder="Seu nome" />
+
+    <label for="email">E-mail</label>
+    <input type="email" id="email" required placeholder="Seu e-mail" />
+
+    <label for="senha">Senha</label>
+    <input type="password" id="senha" required placeholder="Crie uma senha" />
+
+    <label for="tipo">Tipo de usuário</label>
+    <select id="tipo" required>
+      <option value="">Selecione...</option>
+      <option value="doador">Doador</option>
+      <option value="coletor">Coletor</option>
+    </select>
+
+    <button type="submit">Cadastrar</button>
+  </form>
+  <div class="link">Já tem conta? <a href="login.html">Faça login</a></div>
+  <div class="error" id="errorMsg"></div>
+  <div class="success" id="successMsg"></div>
+</div>
+
+<script>
+  const form = document.getElementById('cadastroForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const successMsg = document.getElementById('successMsg');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    errorMsg.textContent = '';
+    successMsg.textContent = '';
+
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const tipo = document.getElementById('tipo').value;
+
+    if (!nome || !email || !senha || !tipo) {
+      errorMsg.textContent = 'Por favor, preencha todos os campos.';
+      return;
+    }
+
+    // Busca usuários já cadastrados
+    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+
+    // Verifica se e-mail já existe
+    if (usuarios.some(u => u.email === email)) {
+      errorMsg.textContent = 'Este e-mail já está cadastrado.';
+      return;
+    }
+
+    // Cria novo usuário
+    const novoUsuario = { nome, email, senha, tipo };
+
+    // Salva no localStorage
+    usuarios.push(novoUsuario);
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+    successMsg.textContent = 'Cadastro realizado com sucesso! Redirecionando...';
+
+    // Redireciona após 2 segundos
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 2000);
+  });
+</script>
+
+</body>
+</html>

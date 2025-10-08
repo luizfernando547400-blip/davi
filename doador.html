@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Doador - Ecoltarema</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url("fundo-ecoltarema.jpg") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #2e7d32;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .doacoes {
+      margin-top: 30px;
+    }
+
+    .doacao {
+      background: #e8f5e9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+
+    .menu {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .menu a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="menu">
+    <a href="mapa.html">🗺️ Mapa</a> |
+    <a href="index.html" onclick="sair()">🚪 Sair</a>
+  </div>
+
+  <div class="container">
+    <h2>Registrar Doação</h2>
+    <input type="text" id="material" placeholder="Tipo de material">
+    <input type="text" id="quantidade" placeholder="Quantidade">
+    <input type="text" id="endereco" placeholder="Endereço (manual)">
+    <button onclick="registrarDoacao()">Doar</button>
+
+    <div class="doacoes">
+      <h2>Minhas Doações</h2>
+      <div id="listaDoacoes"></div>
+    </div>
+  </div>
+
+  <script>
+    if (!localStorage.getItem("usuario")) {
+      alert("Você precisa estar logado.");
+      window.location.href = "index.html";
+    }
+
+    function sair() {
+      localStorage.removeItem("usuario");
+    }
+
+    let minhasDoacoes = [];
+
+    function registrarDoacao() {
+      const material = document.getElementById("material").value;
+      const quantidade = document.getElementById("quantidade").value;
+      const endereco = document.getElementById("endereco").value;
+
+      if (!material || !quantidade || !endereco) {
+        alert("Preencha todos os campos");
+        return;
+      }
+
+      const doacao = { material, quantidade, endereco };
+      minhasDoacoes.push(doacao);
+      mostrarDoacoes();
+      alert("Doação registrada!");
+
+      document.getElementById("material").value = "";
+      document.getElementById("quantidade").value = "";
+      document.getElementById("endereco").value = "";
+    }
+
+    function mostrarDoacoes() {
+      const lista = document.getElementById("listaDoacoes");
+      lista.innerHTML = "";
+      minhasDoacoes.forEach((d, i) => {
+        const div = document.createElement("div");
+        div.className = "doacao";
+        div.innerHTML = `
+          <strong>${d.material}</strong><br>
+          Quantidade: ${d.quantidade}<br>
+          Endereço: ${d.endereco}
+        `;
+        lista.appendChild(div);
+      });
+    }
+  </script>
+
+</body>
+</html>
