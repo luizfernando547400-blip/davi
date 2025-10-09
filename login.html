@@ -204,7 +204,7 @@
     </div>
   </div>
 
-  <script>ç
+  <script>
     const form = document.getElementById("loginForm");
     const errorMsg = document.getElementById("errorMsg");
 
@@ -215,8 +215,10 @@
       const senha = document.getElementById("senha").value;
       const lembrar = document.getElementById("lembrar").checked;
 
+      // Obtém os usuários do localStorage
       const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
 
+      // Busca o usuário pelo email
       const usuario = usuarios.find(u => u.email.toLowerCase() === email);
 
       if (!usuario) {
