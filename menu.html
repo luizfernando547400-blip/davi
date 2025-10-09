@@ -92,8 +92,8 @@
   <button class="notif-btn" onclick="window.location.href='notificacao.html'">🔔</button>
 
   <!-- Botões de ação -->
-  <button id="btnDoador" class="action-btn" style="display:none" onclick="window.location.href='escolha.html'">Faça sua doação</button>
-  <button id="btnColetor" class="action-btn" style="display:none" onclick="window.location.href='coletor.html'">Veja as coletas do dia</button>
+  <button id="btnDoador" class="action-btn" style="display:none">Faça sua doação</button>
+  <button id="btnColetor" class="action-btn" style="display:none">Veja as coletas do dia</button>
 
   <div id="map"></div>
 
@@ -185,6 +185,17 @@
       alert("Você saiu da conta.");
       window.location.href = "login.html";
     }
+
+    // Ação do botão de doador
+    document.getElementById("btnDoador").addEventListener('click', () => {
+      window.location.href = 'escolha.html';
+    });
+
+    // Ação do botão de coletor
+    document.getElementById("btnColetor").addEventListener('click', () => {
+      window.location.href = 'coletor.html';
+    });
+
   </script>
 </body>
 </html>
