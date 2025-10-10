@@ -114,96 +114,90 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Inicializa o mapa
-    const map = L.map('map', { zoomControl: false }).setView([-2.9245, -39.9167], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+     <script>
+  // Inicializa o mapa
+  const map = L.map('map', { zoomControl: false }).setView([-2.9245, -39.9167], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
 
-    const iconeLixeira = L.divIcon({
-      html: '<div style="font-size:28px;">♻</div>',
-      className: '',
-      iconSize: [28, 28],
-      iconAnchor: [14, 28]
-    });
+  const iconeLixeira = L.divIcon({
+    html: '<div style="font-size:28px;">♻</div>',
+    className: '',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28]
+  });
 
-    // Adiciona os marcadores de coleta (esses não devem aparecer automaticamente)
-    const markers = [
-      L.marker([-2.9286, -39.9195], { icon: iconeLixeira }).bindPopup("<b>Prefeitura de Itarema</b>"),
-      L.marker([-2.9184, -39.9180], { icon: iconeLixeira }).bindPopup("<b>Escola Marieta Rios</b>"),
-      L.marker([-2.9257, -39.9097], { icon: iconeLixeira }).bindPopup("<b>Posto 24 Horas</b>")
-    ];
+  // Adiciona os marcadores de coleta (não vai aparecer no mapa agora)
+  const markers = [
+    L.marker([-2.9286, -39.9195], { icon: iconeLixeira }).bindPopup("<b>Prefeitura de Itarema</b>"),
+    L.marker([-2.9184, -39.9180], { icon: iconeLixeira }).bindPopup("<b>Escola Marieta Rios</b>"),
+    L.marker([-2.9257, -39.9097], { icon: iconeLixeira }).bindPopup("<b>Posto 24 Horas</b>")
+  ];
 
-    // --- Lógica de autenticação ---
-    const emailLogado = localStorage.getItem("usuarioLogado") || sessionStorage.getItem("usuarioLogado");
+  // --- Lógica de autenticação ---
+  const emailLogado = localStorage.getItem("usuarioLogado") || sessionStorage.getItem("usuarioLogado");
 
-    if (!emailLogado) {
-      alert("Você precisa estar logado para acessar esta página.");
-      window.location.href = "login.html";
-    }
+  if (!emailLogado) {
+    alert("Você precisa estar logado para acessar esta página.");
+    window.location.href = "login.html";
+  }
 
-    // Recupera lista de usuários
-    const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
-    const user = usuarios.find(u => u.email === emailLogado);
+  // Recupera lista de usuários
+  const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+  const user = usuarios.find(u => u.email === emailLogado);
 
-    if (!user) {
-      alert("Usuário não encontrado. Faça login novamente.");
-      localStorage.removeItem("usuarioLogado");
-      sessionStorage.removeItem("usuarioLogado");
-      window.location.href = "login.html";
-    }
+  if (!user) {
+    alert("Usuário não encontrado. Faça login novamente.");
+    localStorage.removeItem("usuarioLogado");
+    sessionStorage.removeItem("usuarioLogado");
+    window.location.href = "login.html";
+  }
 
-    // Mostra o botão correto
-    if (user.tipo === "doador") {
-      document.getElementById("btnDoador").style.display = "block";
-    } else if (user.tipo === "coletor") {
-      document.getElementById("btnColetor").style.display = "block";
-    }
+  // Mostra o botão correto
+  if (user.tipo === "doador") {
+    document.getElementById("btnDoador").style.display = "block";
+  } else if (user.tipo === "coletor") {
+    document.getElementById("btnColetor").style.display = "block";
+  }
 
-    // Preenche perfil
-    document.getElementById("nomePerfil").innerText = user.nome || user.email;
-    if (user.foto && user.foto.trim() !== "") {
-      document.getElementById("fotoPerfil").src = user.foto;
-    }
+  // Preenche perfil
+  document.getElementById("nomePerfil").innerText = user.nome || user.email;
+  if (user.foto && user.foto.trim() !== "") {
+    document.getElementById("fotoPerfil").src = user.foto;
+  }
 
-    // Controle do menu lateral
-    const btnMenu = document.getElementById("btnMenu");
-    const sideMenu = document.getElementById("sideMenu");
-    const overlay = document.getElementById("overlay");
+  // Controle do menu lateral
+  const btnMenu = document.getElementById("btnMenu");
+  const sideMenu = document.getElementById("sideMenu");
+  const overlay = document.getElementById("overlay");
 
-    btnMenu.addEventListener("click", () => {
-      sideMenu.classList.add("open");
-      overlay.classList.add("show");
-    });
+  btnMenu.addEventListener("click", () => {
+    sideMenu.classList.add("open");
+    overlay.classList.add("show");
+  });
 
-    overlay.addEventListener("click", () => {
-      sideMenu.classList.remove("open");
-      overlay.classList.remove("show");
-    });
+  overlay.addEventListener("click", () => {
+    sideMenu.classList.remove("open");
+    overlay.classList.remove("show");
+  });
 
-    // Função de logout
-    function logout() {
-      localStorage.removeItem("usuarioLogado");
-      sessionStorage.removeItem("usuarioLogado");
-      alert("Você saiu da conta.");
-      window.location.href = "login.html";
-    }
+  // Função de logout
+  function logout() {
+    localStorage.removeItem("usuarioLogado");
+    sessionStorage.removeItem("usuarioLogado");
+    alert("Você saiu da conta.");
+    window.location.href = "login.html";
+  }
 
-    // Exibe as coletas no mapa apenas ao clicar no botão
-    function exibirColetas() {
-      markers.forEach(marker => marker.addTo(map));
-    }
+  // Ação do botão de doador
+  document.getElementById("btnDoador").addEventListener('click', () => {
+    window.location.href = 'escolha.html';  // Redireciona para a página de doação
+  });
 
-    // Ação do botão de doador
-    document.getElementById("btnDoador").addEventListener('click', () => {
-      window.location.href = 'escolha.html';  // Redireciona para a página de doação
-    });
+  // Ação do botão de coletor
+  document.getElementById("btnColetor").addEventListener('click', () => {
+    window.location.href = 'coletor.html';  // Redireciona para a página de coletor
+  });
 
-    // Ação do botão de coletor
-    document.getElementById("btnColetor").addEventListener('click', () => {
-      window.location.href = 'coletor.html';  // Redireciona para a página do coletor
-    });
-
-  </script>
-</body>
-</html>
+</script>
