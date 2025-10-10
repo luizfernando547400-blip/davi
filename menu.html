@@ -83,23 +83,6 @@
       z-index: 1050; display: none;
     }
     .overlay.show { display: block; }
-
-    /* Botão de seta para voltar */
-    .back-btn {
-      position: absolute;
-      top: 20px; left: 20px;
-      background: #fff;
-      border: none;
-      border-radius: 50%;
-      padding: 10px;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1102;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-    .back-btn:hover {
-      background: #f1f1f1;
-    }
   </style>
 </head>
 
@@ -128,9 +111,6 @@
   </nav>
 
   <div class="overlay" id="overlay"></div>
-
-  <!-- Botão de voltar -->
-  <button class="back-btn" onclick="voltarParaMenu()">←</button>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
@@ -220,11 +200,6 @@
     document.getElementById("btnColetor").addEventListener('click', () => {
       window.location.href = 'coletor.html';  // Redireciona para a página de coletor
     });
-
-    // Função de voltar para o menu
-    function voltarParaMenu() {
-      window.location.href = 'index.html'; // Redireciona para o menu principal
-    }
   </script>
 </body>
 </html>
