@@ -1,89 +1,89 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Menu Principal - Ecoltarema</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    overflow-x: hidden;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Principal - Ecoltarema</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      overflow-x: hidden;
+    }
 
-  #map { height: 100%; width: 100%; }
+    #map { height: 100%; width: 100%; }
 
-  /* Barra superior */
-  .top-bar {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 55px;
-    background: #2e7d32; color: #fff;
-    display: flex; justify-content: center; align-items: center;
-    font-size: 20px; font-weight: bold;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  }
+    /* Barra superior */
+    .top-bar {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 55px;
+      background: #2e7d32; color: #fff;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 20px; font-weight: bold;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
 
-  .menu-btn, .notif-btn {
-    position: absolute; top: 12px;
-    background: none; color: white; border: none;
-    font-size: 24px; cursor: pointer; z-index: 1102;
-  }
-  .menu-btn { left: 12px; }
-  .notif-btn { right: 12px; }
+    .menu-btn, .notif-btn {
+      position: absolute; top: 12px;
+      background: none; color: white; border: none;
+      font-size: 24px; cursor: pointer; z-index: 1102;
+    }
+    .menu-btn { left: 12px; }
+    .notif-btn { right: 12px; }
 
-  /* Botões de ação */
-  .action-btn {
-    position: absolute; bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    background: #4caf50; color: white; border: none;
-    padding: 14px 26px; font-size: 16px; font-weight: bold;
-    border-radius: 30px; cursor: pointer; z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    transition: 0.2s;
-  }
-  .action-btn:hover { background: #43a047; }
+    /* Botões de ação */
+    .action-btn {
+      position: absolute; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: #4caf50; color: white; border: none;
+      padding: 14px 26px; font-size: 16px; font-weight: bold;
+      border-radius: 30px; cursor: pointer; z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: 0.2s;
+    }
+    .action-btn:hover { background: #43a047; }
 
-  /* Menu lateral */
-  .side-menu {
-    position: fixed; top: 0; left: -260px;
-    width: 260px; height: 100%;
-    background: #2e7d32; color: white;
-    padding-top: 60px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-    transition: left 0.3s ease;
-    z-index: 1100;
-    display: flex; flex-direction: column; align-items: center;
-  }
-  .side-menu.open { left: 0; }
-  .side-menu img.profile-pic {
-    width: 90px; height: 90px; border-radius: 50%;
-    margin-bottom: 10px; border: 3px solid white; object-fit: cover;
-  }
-  .side-menu p {
-    font-weight: bold; margin-bottom: 15px; font-size: 18px;
-  }
-  .side-menu button {
-    background: none; border: none; color: white; font-size: 18px;
-    padding: 15px 20px; text-align: left;
-    cursor: pointer; border-bottom: 1px solid #1b4d23;
-    display: flex; align-items: center; width: 100%;
-  }
-  .side-menu button:hover { background: #145623; }
-  .side-menu button span.icon { margin-right: 10px; font-size: 22px; }
+    /* Menu lateral */
+    .side-menu {
+      position: fixed; top: 0; left: -260px;
+      width: 260px; height: 100%;
+      background: #2e7d32; color: white;
+      padding-top: 60px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+      transition: left 0.3s ease;
+      z-index: 1100;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .side-menu.open { left: 0; }
+    .side-menu img.profile-pic {
+      width: 90px; height: 90px; border-radius: 50%;
+      margin-bottom: 10px; border: 3px solid white; object-fit: cover;
+    }
+    .side-menu p {
+      font-weight: bold; margin-bottom: 15px; font-size: 18px;
+    }
+    .side-menu button {
+      background: none; border: none; color: white; font-size: 18px;
+      padding: 15px 20px; text-align: left;
+      cursor: pointer; border-bottom: 1px solid #1b4d23;
+      display: flex; align-items: center; width: 100%;
+    }
+    .side-menu button:hover { background: #145623; }
+    .side-menu button span.icon { margin-right: 10px; font-size: 22px; }
 
-  /* Overlay */
-  .overlay {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.3);
-    z-index: 1050; display: none;
-  }
-  .overlay.show { display: block; }
-</style>
+    /* Overlay */
+    .overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: 1050; display: none;
+    }
+    .overlay.show { display: block; }
+  </style>
 </head>
 
 <body>
@@ -127,9 +127,12 @@
       iconAnchor: [14, 28]
     });
 
-    L.marker([-2.9286, -39.9195], { icon: iconeLixeira }).addTo(map).bindPopup("<b>Prefeitura de Itarema</b>");
-    L.marker([-2.9184, -39.9180], { icon: iconeLixeira }).addTo(map).bindPopup("<b>Escola Marieta Rios</b>");
-    L.marker([-2.9257, -39.9097], { icon: iconeLixeira }).addTo(map).bindPopup("<b>Posto 24 Horas</b>");
+    // Adiciona os marcadores de coleta (esses não devem aparecer automaticamente)
+    const markers = [
+      L.marker([-2.9286, -39.9195], { icon: iconeLixeira }).bindPopup("<b>Prefeitura de Itarema</b>"),
+      L.marker([-2.9184, -39.9180], { icon: iconeLixeira }).bindPopup("<b>Escola Marieta Rios</b>"),
+      L.marker([-2.9257, -39.9097], { icon: iconeLixeira }).bindPopup("<b>Posto 24 Horas</b>")
+    ];
 
     // --- Lógica de autenticação ---
     const emailLogado = localStorage.getItem("usuarioLogado") || sessionStorage.getItem("usuarioLogado");
@@ -150,7 +153,7 @@
       window.location.href = "login.html";
     }
 
-    // Mostra botão correto
+    // Mostra o botão correto
     if (user.tipo === "doador") {
       document.getElementById("btnDoador").style.display = "block";
     } else if (user.tipo === "coletor") {
@@ -186,6 +189,11 @@
       window.location.href = "login.html";
     }
 
+    // Exibe as coletas no mapa apenas ao clicar no botão
+    function exibirColetas() {
+      markers.forEach(marker => marker.addTo(map));
+    }
+
     // Ação do botão de doador
     document.getElementById("btnDoador").addEventListener('click', () => {
       window.location.href = 'escolha.html';
@@ -193,7 +201,7 @@
 
     // Ação do botão de coletor
     document.getElementById("btnColetor").addEventListener('click', () => {
-      window.location.href = 'coletor.html';
+      exibirColetas();  // Exibe as coletas ao clicar no botão
     });
 
   </script>
