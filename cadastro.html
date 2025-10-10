@@ -141,15 +141,11 @@
     // Loga automaticamente o usuário
     localStorage.setItem('usuarioLogado', email);
 
-    successMsg.textContent = 'Cadastro realizado com sucesso! Redirecionando...';
+    successMsg.textContent = 'Cadastro realizado com sucesso! Redirecionando para o login...';
 
-    // Redireciona após 1.5 segundos para a tela correta
+    // Redireciona após 1.5 segundos para a tela de login
     setTimeout(() => {
-      if(tipo === "doador"){
-        window.location.href = 'menu.html';
-      } else {
-        window.location.href = 'menu.html';
-      }
+      window.location.href = 'login.html';  // Redireciona para a página de login
     }, 1500);
   });
 </script>
