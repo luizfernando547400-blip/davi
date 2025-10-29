@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Doação na Lixeira - Ecoltarema</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Biblioteca para leitura de QR Code -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -97,6 +101,12 @@
       background: #17a44d;
     }
 
+    #reader {
+      width: 100%;
+      margin: 15px 0;
+      display: none;
+    }
+
     ul {
       list-style: none;
       padding: 0;
@@ -109,20 +119,6 @@
       border-radius: 8px;
       margin-bottom: 10px;
       text-align: left;
-    }
-
-    li button {
-      margin-top: 5px;
-      background: #1db954;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 10px;
-      width: auto;
-    }
-
-    li button:hover {
-      background: #17a44d;
     }
   </style>
 </head>
@@ -161,6 +157,10 @@
       <option value="Posto de Saúde">Posto de Saúde</option>
     </select>
 
+    <button onclick="lerQRCode()">📷 Ler QR Code</button>
+    <div id="reader"></div>
+    <p id="statusQR" style="color:#1aa34a; font-weight:600;"></p>
+
     <button onclick="enviarDoacao()">Registrar Doação</button>
     <button onclick="irPara('menu.html')">Voltar ao Menu</button>
     <button onclick="irPara('ranking.html')">Ver Ranking</button>
@@ -170,7 +170,7 @@
   </div>
 
   <script>
-    // --- Verificação de login e carregamento do usuário ---
+    // --- Login ---
     const email = localStorage.getItem("usuarioLogado") || sessionStorage.getItem("usuarioLogado");
 
     if (!email) {
@@ -188,7 +188,36 @@
       document.getElementById("usuarioInfo").innerText = `Logado como: ${usuario.nome} | Tipo: ${usuario.tipo}`;
     }
 
-    // --- Funções principais ---
+    // --- Controle de QR Code ---
+    let qrValido = false;
+    let scanner = null;
+
+    function lerQRCode() {
+      const readerDiv = document.getElementById("reader");
+      readerDiv.style.display = "block";
+      document.getElementById("statusQR").innerText = "Aponte a câmera para o QR Code da lixeira...";
+
+      scanner = new Html5Qrcode("reader");
+      scanner.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: 250
+        },
+        qrCodeMessage => {
+          qrValido = true;
+          document.getElementById("statusQR").innerText = "✅ QR Code válido lido com sucesso!";
+          scanner.stop();
+          readerDiv.style.display = "none";
+        },
+        errorMessage => {
+          // Ignora erros enquanto tenta ler
+        }
+      ).catch(err => {
+        alert("Erro ao acessar câmera: " + err);
+      });
+    }
+
     function irPara(pagina) {
       window.location.href = pagina;
     }
@@ -218,13 +247,8 @@
         return;
       }
 
-      if (tipoQuantidade === "quilo" && (isNaN(quantidade) || quantidade <= 0)) {
-        alert("Quantidade inválida (kg).");
-        return;
-      }
-
-      if (tipoQuantidade === "unidade" && (!Number.isInteger(quantidade) || quantidade < 1)) {
-        alert("Quantidade inválida (unidade).");
+      if (!qrValido) {
+        alert("Você precisa ler o QR Code da lixeira antes de registrar a doação!");
         return;
       }
 
@@ -239,7 +263,9 @@
       });
       localStorage.setItem("doacoes", JSON.stringify(doacoes));
 
-      alert("Doação registrada com sucesso! Obrigado por contribuir.");
+      alert("✅ Doação registrada com sucesso! Obrigado por contribuir.");
+      qrValido = false; // Reseta a leitura
+      document.getElementById("statusQR").innerText = "";
       carregarMinhasDoacoes();
 
       document.getElementById("tipoReciclavel").value = "";
@@ -273,5 +299,5 @@
     carregarMinhasDoacoes();
   </script>
 </body>
-
 </html>
+
